@@ -205,7 +205,7 @@ body.rmmode .pol .del{display:block}.pol .del.sure{background:#7a0a1c}
 <div id="stAdd" style="display:none"><h3 class="display">Add Photos</h3><p class="s">Choose a category, then pick one or more photos.</p>
 <div style="margin:-6px 0 8px"><button class="btn g" id="rmBtn" type="button" style="margin-left:0">🗑 Remove photos…</button><button class="btn g" id="rstBtn" type="button" style="display:none"></button></div>
 <label for="catSel">Category</label><select id="catSel"></select>
-<div class="hint" id="pplHint" style="display:none">Platoon category: a <b>Name</b> (required) and <b>Rank</b> (optional) box will appear under each photo you pick.</div>
+<div class="hint" id="pplHint" style="display:none">Platoon category: optional <b>Name</b> and <b>Rank</b> boxes will appear under each photo you pick.</div>
 <div id="newCat" style="display:none"><label for="ncName">New category name</label><input type="text" id="ncName" maxlength="40" placeholder="e.g. Annual Training Camp" autocomplete="off"><label class="chk" for="ncPpl"><input type="checkbox" id="ncPpl"><span>This is a platoon / people category (add name &amp; rank for each photo)</span></label><div><button class="btn" id="ncGo" type="button">Create category</button><button class="btn g" id="ncCancel" type="button">Cancel</button></div><div class="msg" id="ncMsg"></div></div>
 <label for="fileIn">Photos</label><input type="file" id="fileIn" accept="image/*" multiple>
 <div class="pv" id="pv"></div><datalist id="rankList"></datalist>
@@ -370,7 +370,7 @@ const isNew=()=>catSel.value==='__new';
 const isPeople=()=>{const c=DATA.find(x=>x.name===catSel.value);return !!(c&&c.names)};
 function drawPv(){const pv=$('pv');pv.innerHTML='';const ppl=isPeople();
   staged.forEach(s=>{const it=document.createElement('div');it.className='it';const im=document.createElement('img');im.src=s.data;it.appendChild(im);
-    if(ppl){const n=document.createElement('input');n.type='text';n.placeholder='Name (required)';n.value=s.name||'';n.oninput=()=>{s.name=n.value};const r=document.createElement('input');r.type='text';r.placeholder='Rank (optional)';r.setAttribute('list','rankList');r.value=s.rank||'';r.oninput=()=>{s.rank=r.value};it.append(n,r)}
+    if(ppl){const n=document.createElement('input');n.type='text';n.placeholder='Name (optional)';n.value=s.name||'';n.oninput=()=>{s.name=n.value};const r=document.createElement('input');r.type='text';r.placeholder='Rank (optional)';r.setAttribute('list','rankList');r.value=s.rank||'';r.oninput=()=>{s.rank=r.value};it.append(n,r)}
     pv.appendChild(it)});
   $('upGo').disabled=!staged.length||isNew()||(mode==='shared'&&!canWrite)}
 function syncCat(){const nw=isNew();$('newCat').style.display=nw?'':'none';$('pplHint').style.display=(!nw&&isPeople())?'':'none';if(nw){$('ncMsg').textContent='';setTimeout(()=>$('ncName').focus(),30)}drawPv()}
@@ -392,9 +392,9 @@ async function createCat(){const name=$('ncName').value.trim().replace(/\s+/g,' 
 $('ncGo').onclick=createCat;$('ncName').addEventListener('keydown',e=>{if(e.key==='Enter')createCat()});
 $('fileIn').onchange=async e=>{const fs=[...e.target.files];staged=[];$('pv').innerHTML='';msg.className='msg';msg.textContent=fs.length?'Preparing photos…':'';$('upGo').disabled=true;
   for(const f of fs){try{staged.push({data:await shrink(f,720,.68),name:'',rank:''})}catch(err){}}
-  msg.textContent=staged.length?staged.length+' photo'+(staged.length>1?'s':'')+' ready.'+(isPeople()?' Type a name (required) and rank (optional) under each photo.':''):(fs.length?'Those files could not be read as images.':'');drawPv()};
+  msg.textContent=staged.length?staged.length+' photo'+(staged.length>1?'s':'')+' ready.'+(isPeople()?' Add an optional name and rank under each photo.':''):(fs.length?'Those files could not be read as images.':'');drawPv()};
 $('upGo').onclick=async()=>{const cat=catSel.value,ppl=isPeople();if(cat==='__new')return;msg.className='msg';
-  if(ppl&&staged.some(s=>!(s.name||'').trim())){msg.className='msg err';msg.textContent='Please type a name under every photo.';return}
+  
   $('upGo').disabled=true;let ok=0;
   try{for(const s of staged){msg.textContent='Adding '+(ok+1)+' of '+staged.length+'…';
     const rec={cat,data:s.data,ts:Date.now()+ok};if(ppl){rec.name=s.name.trim().toUpperCase();rec.rank=(s.rank||'').trim().toUpperCase()}
