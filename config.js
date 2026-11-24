@@ -1,3 +1,2 @@
-// Password for the "＋ Add photos" panel.
-// To change it: edit the text between the quotes below, then commit/upload this file to GitHub.
-window.NCC_PASSWORD = "NCCCIRS";
+const SUPABASE_URL = "https://ncljpsdjrgrsdaxdxykk.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
